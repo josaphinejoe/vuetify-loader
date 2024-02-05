@@ -3,7 +3,7 @@ import { Plugin } from 'vite'
 import { generateImports, Options } from '@vuetify/loader-shared'
 import { parse as parseUrl, URLSearchParams } from 'url'
 
-function parseId (id: string) {
+function parseId(id: string) {
   const { query, pathname } = parseUrl(id)
 
   return {
@@ -12,19 +12,16 @@ function parseId (id: string) {
   }
 }
 
-export function importPlugin (options: Options): Plugin {
+export function importPlugin(options: Options): Plugin {
   return {
     name: 'vuetify:import',
-    configResolved (config) {
-      if (config.plugins.findIndex(plugin => plugin.name === 'vuetify:import') < config.plugins.findIndex(plugin => plugin.name === 'vite:vue')) {
-        throw new Error('Vuetify plugin must be loaded after the vue plugin')
-      }
-    },
-    async transform (code, id) {
+
+    async transform(code, id) {
       const { query, path } = parseId(id)
 
       if (
-        ((!query || !('vue' in query)) && extname(path) === '.vue' && !/^import { render as _sfc_render } from ".*"$/m.test(code)) ||
+        ((extname(path) === '.vue' && !/^import { render as _sfc_render } from ".*"$/m.test(code)) ||
+          (extname(path) === '.html' && /<v-[^\s>]+/m.test(code))) ||
         (query && 'vue' in query && (query.type === 'template' || (query.type === 'script' && query.setup === 'true')))
       ) {
         const { code: imports, source } = generateImports(code, options)
