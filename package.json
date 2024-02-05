@@ -1,4 +1,6 @@
 {
+  "name": "vite-plugin-vuetify-irene",
+  "version": "1.0.0",
   "private": true,
   "workspaces": [
     "dev",
